@@ -16,7 +16,6 @@ class Customer {
 
   /** find all customers. */
   static async all() {
-    const test = await db.query('SELECT * FROM customers')
     const results = await db.query(
       `SELECT id, 
          first_name AS "firstName",  
@@ -27,6 +26,28 @@ class Customer {
        ORDER BY last_name, first_name`
     );
     return results.rows.map(c => new Customer(c));
+  }
+
+
+  /** Get a list of customers based on a search query */
+  static async searchCustomers(search) {
+    search = search.toLowerCase(); 
+    const results = await db.query(
+      `SELECT id, 
+         first_name AS "firstName",  
+         last_name AS "lastName", 
+         phone, 
+         notes
+       FROM customers
+       ORDER BY last_name, first_name`
+    );
+    const customers = results.rows.map(c => new Customer(c));
+    const customerFullNames = customers.map(c => {
+      c.fullName = c.getFullName().toLowerCase();
+      return c;
+    });
+    const customerSearchResults = customerFullNames.filter(c => c.fullName.includes(search));
+    return customerSearchResults;
   }
 
 

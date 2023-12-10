@@ -10,10 +10,23 @@ const router = new express.Router();
 
 /** Homepage: show list of customers. */
 router.get("/", async function (req, res, next) {
-  console.log('in root route');
   try {
     const customers = await Customer.all();
     return res.render("customer_list.html", { customers });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
+/** Search page: show list of customers with matching names. */
+router.get("/customers", async function (req, res, next) {
+  console.log('in search route');
+  const search = req.query.search;
+  console.log(search);
+  try {
+    const customers = await Customer.searchCustomers(search);
+    return res.render("search_customer_list.html", { customers, search });
   } catch (err) {
     return next(err);
   }
