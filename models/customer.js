@@ -1,10 +1,9 @@
 /** Customer for Lunchly */
-
 const db = require("../db");
 const Reservation = require("./reservation");
 
-/** Customer of the restaurant. */
 
+/** Customer of the restaurant. */
 class Customer {
   constructor({ id, firstName, lastName, phone, notes }) {
     this.id = id;
@@ -14,9 +13,10 @@ class Customer {
     this.notes = notes;
   }
 
-  /** find all customers. */
 
+  /** find all customers. */
   static async all() {
+    const test = await db.query('SELECT * FROM customers')
     const results = await db.query(
       `SELECT id, 
          first_name AS "firstName",  
@@ -29,8 +29,14 @@ class Customer {
     return results.rows.map(c => new Customer(c));
   }
 
-  /** get a customer by ID. */
 
+  /** get the full name of the customer */
+  getFullName() {
+    return (this.firstName + ' ' + this.lastName);
+  }
+
+
+  /** get a customer by ID. */
   static async get(id) {
     const results = await db.query(
       `SELECT id, 
@@ -53,14 +59,14 @@ class Customer {
     return new Customer(customer);
   }
 
-  /** get all reservations for this customer. */
 
+  /** get all reservations for this customer. */
   async getReservations() {
     return await Reservation.getReservationsForCustomer(this.id);
   }
 
-  /** save this customer. */
 
+  /** save this customer. */
   async save() {
     if (this.id === undefined) {
       const result = await db.query(
